@@ -4,35 +4,25 @@ import {tick} from 'svelte'
 
 async function toaster(node, sessionKey) {
 	const unsubscribe = notification.subscribe(value => {
-		if(!value) {return }
-		node.dispatchEvent(
-			new CustomEvent('notify', {detail: value})
-		)
-		notification.set()
-	})
+		if(!value) return;
 
-	await tick()
-	try {
-		const existing = JSON.parse(
-			sessionStorage.getItem(sessionKey)
-		)
-		for(const n of existing) {
-			notification.set(n)
-		}
-	} catch(e) {
-	} finally {
+		node.dispatchEvent(new CustomEvent('notify', {detail: value}));
+		notification.set();
+	});
+
+	await tick();
+	if(sessionKey !== null) {
 		try {
-			sessionStorage.removeItem(sessionKey)
-		} catch(e2) {}
+			const existing = JSON.parse(sessionStorage.getItem(sessionKey));
+			for(const n of existing) notification.set(n);
+		} catch {} finally {
+			try {sessionStorage.removeItem(sessionKey);} catch {}
+		}
 	}
 
 	return {
-		destroy() {
-			unsubscribe()
-		}
-	}
+		destroy: unsubscribe
+	};
 }
 
-export {
-	toaster
-}
+export {toaster}

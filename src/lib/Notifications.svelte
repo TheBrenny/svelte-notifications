@@ -10,7 +10,8 @@
 	};
 
 	export let timeout = 3000;
-	export let sessionKey = "byk-toasts";
+	/** @type {null|string} */
+	export let sessionKey = null;
 
 	let toasts = [];
 
@@ -34,7 +35,8 @@
 		const icon = options.icon;
 
 		try {
-			sessionStorage.setItem(sessionKey, JSON.stringify([...JSON.parse(sessionStorage.getItem(sessionKey) || "[]"), { ...detail, id }]));
+			if (sessionKey !== null)
+				sessionStorage.setItem(sessionKey, JSON.stringify([...JSON.parse(sessionStorage.getItem(sessionKey) || "[]"), { ...detail, id }]));
 		} catch (e) {}
 
 		toasts = [
@@ -72,9 +74,7 @@
 <ul class="toasts" use:toaster={sessionKey} on:notify={createToast}>
 	{#each toasts as toast (toast.id)}
 		<li class="toast" style="background: {toast.background};" out:animateOut|global>
-			{#if toast.persist}
-				<button class="close" on:click={() => purge(toast.id)}> ✕ </button>
-			{/if}
+			<button class="close" on:click={() => purge(toast.id)}> ✕ </button>
 			<div class="content">
 				{#if toast.icon}
 					<svelte:component this={toast.icon} />
