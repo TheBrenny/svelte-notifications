@@ -1,4 +1,2 @@
-import NotificationDisplay from './Notifications.svelte'
-import * as notifier from './notifier.js'
-
-export { NotificationDisplay, notifier }
+export {NotificationDisplay} from './Notifications.svelte'
+export * as notifier from './notifier.js'
